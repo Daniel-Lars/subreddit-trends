@@ -46,3 +46,8 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
+src/subreddit_trends/praw.ini
+
+# exclude data directory
+data/*
+src/subreddit_trends/test.py
