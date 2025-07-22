@@ -65,10 +65,23 @@ class RedditScraper:
                 'upvote_ratio': submission.upvote_ratio,
             })
             
+            df = pd.DataFrame(data)  
+            
+            # Explicit type casting
+            df = df.astype({
+                'id': 'string',
+                'url': 'string',
+                'permalink': 'string',
+                'subreddit': 'string',
+                'author': 'string',
+                'title': 'string',
+                'created_utc': 'datetime64[ns]',
+                'post_type': 'string',
+                'score': 'int64',
+                'num_comments': 'int64',
+                'is_gallery': 'boolean',
+                'num_of_images': 'int64',
+                'upvote_ratio': 'float64',
+            })
         
-        return pd.DataFrame(data)
-        
-
-        
-        
-        
+        return df     
