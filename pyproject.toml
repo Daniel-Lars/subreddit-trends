@@ -9,12 +9,16 @@ dependencies = [
     "pandas>=2.3.1",
     "pathlib>=1.0.1",
     "praw>=7.8.1",
+    "pre-commit>=4.2.0",
     "pyarrow>=21.0.0",
     "ruff>=0.12.4",
+    "typer>=0.16.0",
 ]
 
 [project.scripts]
 subreddit-trends = "subreddit_trends:main"
+subreddit-trends-app = "subreddit_trends.main:app"
+
 
 [build-system]
 requires = ["hatchling"]
