@@ -17,9 +17,6 @@ jobs:
         with:
           version: "0.6.8"
 
-      - name: Print hello world
-        run: echo "Hello world!"
-
       - name: Install dependencies using uv
         run: uv run pip install pre-commit
 
