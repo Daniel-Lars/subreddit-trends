@@ -1,7 +1,18 @@
+import pathlib
+from dataclasses import dataclass
 from datetime import datetime
 
 import pandas as pd
 import praw
+
+
+@dataclass
+class ScrapeResult:
+    df: pd.DataFrame
+    api_method: str  # API method used for scraping e.g. "top", "hot", etc.
+    subreddit: str  # subreddit name
+    time_filter: str  # applied time filter
+    timestamp: str  # timestamp of the scrape operation
 
 
 class RedditScraper:
@@ -10,7 +21,7 @@ class RedditScraper:
 
     def get_top_submission(
         self, subreddit_name, time_filter="week", limit=1
-    ) -> pd.DataFrame:
+    ) -> ScrapeResult:
         """Fetches the top submission(s) from a specified subreddit within a given time filter.
         Parameters:
             subreddit_name (str): Name of the subreddit to fetch submissions from.
@@ -33,6 +44,8 @@ class RedditScraper:
                 - num_of_images: Number of images in the post (0 for non-image posts)
                 - upvote_ratio: Upvote ratio of the submission
         """
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         data = []
 
@@ -95,4 +108,31 @@ class RedditScraper:
                 }
             )
 
-        return df
+        return ScrapeResult(
+            df=df,
+            api_method="top",
+            subreddit=subreddit_name,
+            time_filter=time_filter,
+            timestamp=timestamp,
+        )
+
+
+class DataSaver:
+    """Class to handle saving data to a specified storage backend."""
+
+    def save_local_parquet(self, result: ScrapeResult):
+        """Saves the DataFrame to a local parquet file."""
+
+        if result.df.empty:
+            raise ValueError("DataFrame is empty. No data to save.")
+
+        base_dir = pathlib.Path(__file__).resolve().parents[2]
+        data_dir = base_dir / "data" / result.subreddit / result.api_method
+        data_dir.mkdir(parents=True, exist_ok=True)
+
+        file_name = (
+            f"{result.api_method}_{result.time_filter}_{result.timestamp}.parquet"
+        )
+        file_path = data_dir / file_name
+        result.df.to_parquet(file_path, index=False)
+        print(f"Data saved to {file_path}")
