@@ -46,7 +46,10 @@ class RedditScraper:
             # Calculate the number of images in the gallery if it is a gallery post
             # Otherwise, set it to 1 for single image posts
             # and handle other post types accordingly
-            if getattr(submission, "is_gallery", False):
+
+            is_gallery = getattr(submission, "is_gallery", False)
+
+            if is_gallery:
                 post_type = "image_gallery"
                 num_of_images = len(
                     getattr(submission, "gallery_data", {}).get("items", [])
@@ -72,7 +75,7 @@ class RedditScraper:
                     "post_type": post_type,
                     "score": submission.score,
                     "num_comments": submission.num_comments,
-                    "is_gallery": submission.is_gallery,
+                    "is_gallery": is_gallery,
                     "num_of_images": num_of_images,
                     "upvote_ratio": submission.upvote_ratio,
                 }
