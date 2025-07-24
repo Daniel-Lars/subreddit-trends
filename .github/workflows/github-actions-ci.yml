@@ -21,7 +21,7 @@ jobs:
         run: echo "Hello world!"
 
       - name: Install dependencies using uv
-        run: uv pip install pre-commit
+        run: uv run pip install pre-commit
 
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
