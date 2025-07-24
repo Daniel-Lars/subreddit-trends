@@ -19,39 +19,30 @@ class RedditScraper:
     def __init__(self):
         self.reddit = praw.Reddit("subreddit_trends_bot1")
 
-    def get_top_submission(
-        self, subreddit_name, time_filter="week", limit=1
+    def _parse_submission(
+        self, submissions, subreddit_name, api_method, time_filter=None, limit=1
     ) -> ScrapeResult:
-        """Fetches the top submission(s) from a specified subreddit within a given time filter.
-        Parameters:
-            subreddit_name (str): Name of the subreddit to fetch submissions from.
-            time_filter (str, optional): Time period to consider for top submissions.
-                Valid values are 'all', 'day', 'hour', 'month', 'week', 'year'. Defaults to 'week'.
-            limit (int, optional): Number of top submissions to fetch. Defaults to 1.
+        """
+        Parses a list of Reddit submissions and extracts relevant information into a pandas DataFrame.
+        Args:
+            submissions (iterable): An iterable of Reddit submission objects.
+            subreddit_name (str): The name of the subreddit from which submissions are scraped.
+            api_method (str): The API method used to retrieve the submissions.
+            time_filter (str, optional): The time filter applied to the API request (e.g., 'day', 'week').
+            limit (int, optional): The maximum number of submissions to process. Defaults to 1.
         Returns:
-            pandas.DataFrame: A DataFrame containing information about the top submission(s), including:
-                - id: Submission ID
-                - url: URL of the submission
-                - permalink: Reddit permalink to the submission
-                - subreddit: Name of the subreddit
-                - author: Username of the author (None if deleted)
-                - title: Title of the submission
-                - created_utc: Submission creation time (UTC, formatted as "%Y-%m-%d %H:%M:%S")
-                - post_type: Type of post ('image_gallery', 'single_image', or 'other')
-                - score: Submission score (upvotes - downvotes)
-                - num_comments: Number of comments
-                - is_gallery: Boolean indicating if the post is a gallery
-                - num_of_images: Number of images in the post (0 for non-image posts)
-                - upvote_ratio: Upvote ratio of the submission
+            ScrapeResult: An object containing the resulting DataFrame and metadata about the scrape operation.
+        Notes:
+            - Determines post type (image gallery, single image, or other) and counts images accordingly.
+            - Extracts fields such as id, url, author, title, score, number of comments, and upvote ratio.
+            - Casts DataFrame columns to explicit types for consistency.
         """
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         data = []
 
-        for submission in self.reddit.subreddit(subreddit_name).top(
-            time_filter=time_filter, limit=limit
-        ):
+        for submission in submissions:
             # Calculate the number of images in the gallery if it is a gallery post
             # Otherwise, set it to 1 for single image posts
             # and handle other post types accordingly
@@ -110,10 +101,57 @@ class RedditScraper:
 
         return ScrapeResult(
             df=df,
-            api_method="top",
+            api_method=api_method,
             subreddit=subreddit_name,
             time_filter=time_filter,
             timestamp=timestamp,
+        )
+
+    def get_top_submission(
+        self, subreddit_name, time_filter="week", limit=1
+    ) -> ScrapeResult:
+        """
+        Retrieve the top submission(s) from a specified subreddit within a given time filter.
+        Args:
+            subreddit_name (str): The name of the subreddit to query.
+            time_filter (str, optional): The time period to consider for top submissions.
+                Valid options are "all", "day", "hour", "month", "week", "year".
+                Defaults to "week".
+            limit (int, optional): The maximum number of top submissions to retrieve.
+                Defaults to 1.
+        Returns:
+            ScrapeResult: The parsed result containing information about the top submission(s).
+        Raises:
+            prawcore.exceptions.NotFound: If the subreddit does not exist.
+            prawcore.exceptions.Forbidden: If access to the subreddit is restricted.
+            Exception: For other errors encountered during scraping.
+        """
+
+        submissions = self.reddit.subreddit(subreddit_name).top(
+            time_filter=time_filter, limit=limit
+        )
+
+        return self._parse_submission(
+            submissions=submissions,
+            subreddit_name=subreddit_name,
+            api_method="top",
+            time_filter=time_filter,
+        )
+
+    def get_hot_submission(self, subreddit_name, limit=1) -> ScrapeResult:
+        """
+        Retrieves hot submissions from a specified subreddit.
+        Args:
+            subreddit_name (str): The name of the subreddit to fetch hot submissions from.
+            limit (int, optional): The maximum number of submissions to retrieve. Defaults to 1.
+        Returns:
+            ScrapeResult: The parsed result containing information about the retrieved submissions.
+        """
+
+        submissions = self.reddit.subreddit(subreddit_name).hot(limit=limit)
+
+        return self._parse_submission(
+            submissions=submissions, subreddit_name=subreddit_name, api_method="hot"
         )
 
 
@@ -129,6 +167,9 @@ class DataSaver:
         base_dir = pathlib.Path(__file__).resolve().parents[2]
         data_dir = base_dir / "data" / result.subreddit / result.api_method
         data_dir.mkdir(parents=True, exist_ok=True)
+
+        if result.time_filter is None:
+            result.time_filter = "at_point_in_time"
 
         file_name = (
             f"{result.api_method}_{result.time_filter}_{result.timestamp}.parquet"
