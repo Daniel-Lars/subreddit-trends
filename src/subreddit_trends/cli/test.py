@@ -23,4 +23,5 @@ def print_folder_name(folder_name: str = typer.Argument(...)):
 
 
 if __name__ == "__main__":
+    # Run the Typer app
     app()
