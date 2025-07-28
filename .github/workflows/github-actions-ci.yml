@@ -24,7 +24,7 @@ jobs:
         id: get_folder
         run: |
           echo "Getting changed folders from push..."
-          folders=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+          folders=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           echo "Changed folders: $folders"
           echo "FOLDER_NAMES=$folders" >> $GITHUB_ENV
 
