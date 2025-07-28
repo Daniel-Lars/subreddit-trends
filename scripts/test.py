@@ -12,5 +12,4 @@ def exit_code_one():
 
 
 if __name__ == "__main__":
-    # Test exit with code 1
-    exit_code_one()
+    exit_code_zero()
