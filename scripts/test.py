@@ -2,7 +2,7 @@ import sys
 
 
 def exit_code_zero():
-    print("Exiting with code 0")
+    print("Exiting with code 0 - everything should be fine, right?")
     sys.exit(0)
 
 
