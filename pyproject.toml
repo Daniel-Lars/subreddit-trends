@@ -18,6 +18,7 @@ dependencies = [
 [project.scripts]
 subreddit-trends = "subreddit_trends:main"
 subreddit-trends-app = "subreddit_trends.main:app"
+cli-check = "subreddit_trends.cli.test:app"
 
 
 [build-system]

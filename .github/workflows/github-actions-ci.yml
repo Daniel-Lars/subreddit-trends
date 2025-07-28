@@ -18,7 +18,7 @@ jobs:
           version: "0.6.8"
 
       - name: run custom python
-        run: uv run python scripts/test.py
+        run: uv run cli-check exit-code-zero
 
       - name: Install dependencies using uv
         run: uv run pip install pre-commit
