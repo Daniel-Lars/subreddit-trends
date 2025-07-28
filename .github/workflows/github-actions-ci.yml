@@ -20,11 +20,17 @@ jobs:
       - name: run custom python
         run: uv run cli-check exit-code-zero
 
-      - name: Detect changed folder
-        id: get_folder
+      - name: Get changed folders (multi-commit)
+        id: changed
         run: |
-          echo "Getting changed folders from push..."
-          folders=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Getting changed folders from ${{ github.event.before }} to ${{ github.sha }}"
+
+          folders=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep '/' \
+            | cut -d/ -f1 \
+            | sort -u \
+            | tr '\n' ' ')
+
           echo "Changed folders: $folders"
           echo "FOLDER_NAMES=$folders" >> $GITHUB_ENV
 
