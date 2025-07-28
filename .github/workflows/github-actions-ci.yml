@@ -23,12 +23,13 @@ jobs:
       - name: Detect changed folder
         id: get_folder
         run: |
-          git fetch origin main
-          folder=$(git diff --name-only origin/main...HEAD | cut -d/ -f1 | sort -u | head -n 1)
-          echo "FOLDER_NAME=$folder" >> $GITHUB_ENV
+          echo "Getting changed folders from push..."
+          folders=$(git diff --name-only HEAD~1 HEAD | cut -d/ -f1 | sort -u | tr '\n' ' ')
+          echo "Changed folders: $folders"
+          echo "FOLDER_NAMES=$folders" >> $GITHUB_ENV
 
       - name: Run typer print
-        run: uv run cli-check print-folder-name ${{ env.FOLDER_NAME }}
+        run: uv run cli-check print-folder-name ${{ env.FOLDER_NAMES}}
 
       - name: Install dependencies using uv
         run: uv run pip install pre-commit
