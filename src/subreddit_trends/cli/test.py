@@ -17,5 +17,10 @@ def exit_code_one():
     sys.exit(1)
 
 
+@app.command()
+def print_folder_name(folder_name: str = typer.Argument(...)):
+    print(f"Folder name is: {folder_name}")
+
+
 if __name__ == "__main__":
     app()
