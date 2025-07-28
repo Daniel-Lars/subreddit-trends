@@ -7,7 +7,7 @@ def exit_code_zero():
 
 
 def exit_code_one():
-    print("Exiting with code 1")
+    print("Causing expected failure and exiting with code 1")
     sys.exit(1)
 
 
