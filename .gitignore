@@ -51,3 +51,4 @@ src/subreddit_trends/praw.ini
 # exclude data directory
 data/*
 src/subreddit_trends/test.py
+minio-data/*
