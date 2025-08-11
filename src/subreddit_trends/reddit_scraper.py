@@ -1,4 +1,3 @@
-import pathlib
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -156,27 +155,3 @@ class RedditScraper:
         return self._parse_submission(
             submissions=submissions, subreddit_name=subreddit_name, api_method="hot"
         )
-
-
-class DataSaver:
-    """Class to handle saving data to a specified storage backend."""
-
-    def save_local_parquet(self, result: ScrapeResult):
-        """Saves the DataFrame to a local parquet file."""
-
-        if result.df.empty:
-            raise ValueError("DataFrame is empty. No data to save.")
-
-        base_dir = pathlib.Path(__file__).resolve().parents[2]
-        data_dir = base_dir / "data" / result.subreddit / result.api_method
-        data_dir.mkdir(parents=True, exist_ok=True)
-
-        if result.time_filter is None:
-            result.time_filter = "at_point_in_time"
-
-        file_name = (
-            f"{result.api_method}_{result.time_filter}_{result.timestamp}.parquet"
-        )
-        file_path = data_dir / file_name
-        result.df.to_parquet(file_path, index=False)
-        print(f"Data saved to {file_path}")
