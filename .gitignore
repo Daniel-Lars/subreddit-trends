@@ -52,3 +52,6 @@ src/subreddit_trends/praw.ini
 data/*
 src/subreddit_trends/test.py
 minio-data/*
+
+### dotenv ###
+.env

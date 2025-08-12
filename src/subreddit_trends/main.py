@@ -1,3 +1,5 @@
+import os
+
 import typer
 
 from subreddit_trends.reddit_scraper import RedditScraper
@@ -35,8 +37,8 @@ def get_top_submissions(
             storage = LocalStorage()
         elif backend == "minio":
             storage = LocalS3Storage(
-                access_key="minioadmin",
-                secret_key="minioadmin",
+                access_key=os.getenv("MINIO_ROOT_USER"),
+                secret_key=os.getenv("MINIO_ROOT_PASSWORD"),
                 bucket=result.subreddit,
             )
 
