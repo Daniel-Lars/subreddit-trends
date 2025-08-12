@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from minio import Minio
 
-from subreddit_trends.reddit_scraper import ScrapeResult
+from subreddit_trends.reddit.reddit_scraper import ScrapeResult
 
 
 # abstract class to define expected behaviour for storage class
