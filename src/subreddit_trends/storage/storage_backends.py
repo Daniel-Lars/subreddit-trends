@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from minio import Minio
 
-from subreddit_trends.reddit_scraper import ScrapeResult
+from subreddit_trends.reddit.reddit_scraper import ScrapeResult
 
 
 # abstract class to define expected behaviour for storage class
@@ -46,8 +46,6 @@ class LocalS3Storage(StorageBackend):
         self.bucket = bucket
         if not self.client.bucket_exists(self.bucket):
             self.client.make_bucket(self.bucket)
-        else:
-            print(f"Bucket {self.bucket} already exists.")
 
     def save_parquet(self, result: ScrapeResult):
         buffer = io.BytesIO()
