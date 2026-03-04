@@ -6,6 +6,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -21,4 +23,4 @@ jobs:
         run: uv run pip install pre-commit
 
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files
+        run: pre-commit run --from-ref origin/main --to-ref HEAD
