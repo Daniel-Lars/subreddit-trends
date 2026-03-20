@@ -3,9 +3,11 @@ import os
 import typer
 
 from subreddit_trends.cli import options
+from subreddit_trends.cli.utilities import check_minio_connection
 from subreddit_trends.cli.options import StorageBackend, TimeFilter
 from subreddit_trends.reddit.reddit_scraper import RedditScraper
 from subreddit_trends.storage.storage_backends import LocalS3Storage, LocalStorage
+from subreddit_trends.exceptions import MinioNotAvailable
 
 app = typer.Typer()
 
@@ -32,6 +34,13 @@ def get_top_submissions(
         typer.echo(f"Time Filter: {result.time_filter}")
         typer.echo("These are the first rows of the DataFrame:")
         typer.echo(result.df)
+
+    if storage_backend == StorageBackend.MINIO:
+        try:
+            check_minio_connection()
+        except MinioNotAvailable as e:
+            typer.echo(f"Error:{e}", err=True)
+            raise typer.Exit(code=1)
 
     if storage_backend == "local":
         storage = LocalStorage()
